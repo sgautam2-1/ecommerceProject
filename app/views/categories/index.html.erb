@@ -1,0 +1,13 @@
+<div class="mt-4">
+  <%= form_tag(new_arrivals_products_path, method: :get, class: "flex items-center") do %>
+    <%= select_tag(:filter, options_for_select([["Select filter", ""], ["New Arrivals", "new_arrivals"], ["Recently Updated", "recently_updated"]]), class: "form-select mr-2") %>
+    <%= submit_tag "Apply", class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<h1>Categories</h1>
+<ul>
+  <% @categories.each do |category| %>
+    <li><%= link_to category.name, category_path(category) %></li>
+  <% end %>
+</ul>

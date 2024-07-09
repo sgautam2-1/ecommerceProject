@@ -1,0 +1,34 @@
+<div class="mt-4">
+  <%= form_tag(new_arrivals_products_path, method: :get, class: "flex items-center") do %>
+    <%= select_tag(:filter, options_for_select([["Select filter", ""], ["New Arrivals", "new_arrivals"], ["Recently Updated", "recently_updated"]]), class: "form-select mr-2") %>
+    <%= submit_tag "Apply", class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+
+<h1 class="mt-6 text-xl font-semibold">Explore by Category</h1>
+<ul class="flex space-x-4 mt-4">
+  <% @categories.uniq.each do |category| %>
+    <li><%= link_to category.name, category_path(category), class: "text-blue-500 hover:text-blue-700" %></li>
+  <% end %>
+</ul>
+
+<h1><u></u><%= @category.name %> Products</u></h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <% @products.each do |product| %>
+    <div class="border border-gray-200 p-4 rounded-md shadow-md">
+      <% if product.image_url.present? %>
+        <%= link_to image_tag(product.image_url, class: "w-full h-auto rounded-md mb-2"), product_path(product) %>
+      <% else %>
+        <div class="w-full h-auto rounded-md mb-2 bg-gray-200 flex items-center justify-center" style="height: 300px;">
+          <span class="text-gray-600">No image found</span>
+        </div>
+      <% end %>
+      <h2 class="text-lg font-semibold"><%= product.name %></h2>
+      <p class="text-gray-600"><%= product.description %></p>
+      <p class="mt-2 font-bold text-gray-800"><%= number_to_currency(product.price) %></p>
+      <p class="mt-2 text-sm text-gray-500">Category: <%= @category.name %></p>
+    </div>
+  <% end %>
+</div>
+<%= paginate @products %>
