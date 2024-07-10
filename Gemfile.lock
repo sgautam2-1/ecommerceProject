@@ -111,6 +111,10 @@ GEM
     discordrb-webhooks (3.5.0)
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
+    dotenv (3.1.2)
+    dotenv-rails (3.1.2)
+      dotenv (= 3.1.2)
+      railties (>= 6.1)
     erubi (1.13.0)
     event_emitter (0.2.6)
     faker (3.4.1)
@@ -364,6 +368,7 @@ DEPENDENCIES
   capybara (>= 3.26)
   devise
   discordrb
+  dotenv-rails
   faker
   friendly_id (~> 5.4)
   jbuilder (~> 2.7)

@@ -1,0 +1,2 @@
+class DiscordBotController < ApplicationController
+end

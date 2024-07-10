@@ -6,27 +6,50 @@
   <% end %>
 </div>
 
-<h1>Featured Products</h1>
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-  <% @products.each do |product| %>
-    <div class="border border-gray-200 p-4 rounded-md shadow-md">
-      <% if product.image_url.present? %>
-        <%= link_to image_tag(product.image_url, class: "w-full h-auto rounded-md mb-2"), product_path(product) %>
-      <% else %>
-        <div class="w-full h-auto rounded-md mb-2 bg-gray-200 flex items-center justify-center" style="height: 300px;">
-          <span class="text-gray-600">No image found</span>
-        </div>
-      <% end %>
-      <h2 class="text-lg font-semibold"><%= product.name %></h2>
-      <p class="text-gray-600"><%= product.description %></p>
-      <p class="mt-2 font-bold text-gray-800"><%= number_to_currency(product.price) %></p>
-      <p class="mt-2 text-sm text-gray-500">
-        Category: <%= product.category.present? ? product.category.name : "No category" %>
-      </p>
-    </div>
-  <% end %>
-</div>
-<%= paginate @products %>
+<% if @search_results.present? %>
+  <h1>Search Results</h1>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <% @search_results.each do |product| %>
+      <div class="border border-gray-200 p-4 rounded-md shadow-md">
+        <% if product.image_url.present? %>
+          <%= link_to image_tag(product.image_url, class: "w-full h-auto rounded-md mb-2"), product_path(product) %>
+        <% else %>
+          <div class="w-full h-auto rounded-md mb-2 bg-gray-200 flex items-center justify-center" style="height: 300px;">
+            <span class="text-gray-600">No image found</span>
+          </div>
+        <% end %>
+        <h2 class="text-lg font-semibold"><%= product.name %></h2>
+        <p class="text-gray-600"><%= product.description %></p>
+        <p class="mt-2 font-bold text-gray-800"><%= number_to_currency(product.price) %></p>
+        <p class="mt-2 text-sm text-gray-500">
+          Category: <%= product.category.present? ? product.category.name : "No category" %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <h1>Featured Products</h1>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <% @products.each do |product| %>
+      <div class="border border-gray-200 p-4 rounded-md shadow-md">
+        <% if product.image_url.present? %>
+          <%= link_to image_tag(product.image_url, class: "w-full h-auto rounded-md mb-2"), product_path(product) %>
+        <% else %>
+          <div class="w-full h-auto rounded-md mb-2 bg-gray-200 flex items-center justify-center" style="height: 300px;">
+            <span class="text-gray-600">No image found</span>
+          </div>
+        <% end %>
+        <h2 class="text-lg font-semibold"><%= product.name %></h2>
+        <p class="text-gray-600"><%= product.description %></p>
+        <p class="mt-2 font-bold text-gray-800"><%= number_to_currency(product.price) %></p>
+        <p class="mt-2 text-sm text-gray-500">
+          Category: <%= product.category.present? ? product.category.name : "No category" %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+  <%= paginate @products %>
+<% end %>
 
 <h2 class="mt-6 text-xl font-semibold">Explore by Category</h2>
 <ul class="flex space-x-4 mt-4">

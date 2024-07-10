@@ -1,32 +1,26 @@
+# app/controllers/products_controller.rb
+
 class ProductsController < ApplicationController
-  before_action :set_categories, only: [:index, :new_arrivals, :recently_updated]
+  before_action :set_categories, only: [:index, :show, :new_arrivals, :recently_updated]
+  before_action :set_product, only: [:show]
 
   def index
-    @products = if params[:filter].present?
-                  case params[:filter]
-                  when "new_arrivals"
-                    Product.where("created_at >= ?", 1.minute.ago).page(params[:page]).per(10)
-                  when "recently_updated"
-                    Product.where("updated_at >= ?", 1.minute.ago).page(params[:page]).per(10)
-                  else
-                    Product.page(params[:page]).per(10)
-                  end
-                else
-                  Product.page(params[:page]).per(10)
-                end
+    @products = Product.page(params[:page]).per(10)
+    filter_products
   end
 
   def show
-    @product = Product.find(params[:id])
   end
 
   def new_arrivals
-    @products = Product.where("created_at >= ?", 1.minute.ago).page(params[:page]).per(10)
+    @products = Product.where("created_at >= ?", 1.hour.ago).page(params[:page]).per(10)
+    filter_products
     render :index
   end
 
   def recently_updated
-    @products = Product.where("updated_at >= ?", 1.minute.ago).page(params[:page]).per(10)
+    @products = Product.where("updated_at >= ?", 1.hour.ago).page(params[:page]).per(10)
+    filter_products
     render :index
   end
 
@@ -34,5 +28,25 @@ class ProductsController < ApplicationController
 
   def set_categories
     @categories = Category.includes(:products)
+  end
+
+  def filter_products
+    if params[:search].present?
+      @products = @products.where("name LIKE ?", "%#{params[:search]}%")
+    end
+
+    if params[:category].present? && params[:category] != ""
+      @products = @products.where(category_id: params[:category])
+    end
+
+    if params[:filter] == 'new_arrivals'
+      @products = @products.where("created_at >= ?", 1.hour.ago)
+    elsif params[:filter] == 'recently_updated'
+      @products = @products.where("updated_at >= ?", 1.hour.ago)
+    end
+  end
+
+  def set_product
+    @product = Product.find(params[:id])
   end
 end
