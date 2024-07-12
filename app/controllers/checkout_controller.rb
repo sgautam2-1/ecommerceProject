@@ -1,94 +1,73 @@
 # app/controllers/checkout_controller.rb
 class CheckoutController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_address_present, only: [:new, :create]
 
   def new
-    @cart_items = session[:cart] || []
-    @address = current_user.address
     @order = current_user.orders.build
-    @order.address = @address
-    @order.province = @address.province
-    @cart_items.each do |item|
-      product = Product.find(item["product_id"])
-      @order.order_items.build(product: product, quantity: item["quantity"], price: product.price)
-    end
-    calculate_total_with_taxes
+    prepare_order_details
   end
 
   def create
-    @cart_items = session[:cart] || []
     @order = current_user.orders.build(order_params)
     @order.status = 'pending'
-    @order.address = current_user.address
-    @order.province = current_user.address.province
-    calculate_total_with_taxes
+    prepare_order_details  # Ensure order details are prepared before saving
+
+    Rails.logger.debug("Order Details before save: #{@order.attributes}")
+    Rails.logger.debug("Order Items before save: #{@order.order_items.map(&:attributes)}")
 
     if @order.save
       session[:cart] = [] # Clear the cart
-      redirect_to checkout_path(@order), notice: 'Order placed successfully. Please complete payment.'
+      redirect_to orders_path, notice: 'Order placed successfully.'
     else
+      Rails.logger.debug("Order save errors: #{@order.errors.full_messages}")
+      prepare_order_details
       render :new
     end
   end
 
-  def show
-    @order = current_user.orders.find(params[:id])
-    calculate_total_with_taxes
-  end
-
-  def payment
-    @order = current_user.orders.find(params[:id])
-    @amount = (@order.total_amount * 100).to_i # Amount in cents
-  
-    customer = Stripe::Customer.create(
-      email: current_user.email,
-      source: params[:stripeToken]
-    )
-  
-    charge = Stripe::Charge.create(
-      customer: customer.id,
-      amount: @amount,
-      description: "Order #{@order.id}",
-      currency: 'usd'
-    )
-  
-    @order.update(status: 'paid', stripe_customer_id: customer.id, stripe_charge_id: charge.id)
-  
-    redirect_to orders_path, notice: 'Payment successful and order placed.'
-  rescue Stripe::CardError => e
-    flash[:alert] = e.message
-    redirect_to checkout_path(@order)
-  end
-
   private
-
-  def ensure_address_present
-    unless current_user.address
-      redirect_to new_address_path, alert: 'Please enter your address to continue.'
-    end
-  end
 
   def order_params
     params.require(:order).permit(order_items_attributes: [:product_id, :quantity, :price])
   end
 
-  def calculate_total_with_taxes
-    subtotal = @order.order_items.sum { |item| item.quantity * item.price }
-    gst = subtotal * (@order.province.gst || 0) / 100
-    pst = subtotal * (@order.province.pst || 0) / 100
-    hst = subtotal * (@order.province.hst || 0) / 100
-    qst = subtotal * (@order.province.qst || 0) / 100
+  def prepare_order_details
+    if current_user.address && current_user.address.province
+      @order.address = current_user.address
+      @order.province = current_user.address.province
+      @cart_items = session[:cart] || []
+
+      # Clear existing order items if any (optional, depends on your logic)
+      @order.order_items.clear if @order.new_record?
+
+      @cart_items.each do |item|
+        product = Product.find(item["product_id"])
+        @order.order_items.build(product: product, quantity: item["quantity"], price: product.price)
+      end
+      @taxes = calculate_taxes(@order)
+      @order.total_amount = @taxes[:total_amount]  # Ensure the order's total amount is updated
+    else
+      redirect_to new_address_path, alert: 'Please update your address with a valid province.'
+    end
+  end
+
+  def calculate_taxes(order)
+    subtotal = order.order_items.sum { |item| item.quantity * item.price }
+    province = order.province
+    gst = subtotal * province.gst / 100
+    pst = subtotal * province.pst / 100
+    hst = subtotal * province.hst / 100
+    qst = subtotal * province.qst / 100
     total_taxes = gst + pst + hst + qst
-    @taxes = {
-      subtotal: subtotal.round(2),
-      gst: gst.round(2),
-      pst: pst.round(2),
-      hst: hst.round(2),
-      qst: qst.round(2),
-      total_taxes: total_taxes.round(2),
-      total_amount: (subtotal + total_taxes).round(2)
+    total_amount = subtotal + total_taxes
+    {
+      subtotal: subtotal,
+      gst: gst,
+      pst: pst,
+      hst: hst,
+      qst: qst,
+      total_taxes: total_taxes,
+      total_amount: total_amount
     }
-    @order.total_amount = @taxes[:total_amount]
   end
 end

@@ -1,0 +1,11 @@
+<!-- app/views/checkout/_order_item_fields.html.erb -->
+<tr>
+  <td class="border px-4 py-2"><%= f.object.product.name %></td>
+  <td class="border px-4 py-2"><%= f.object.quantity %></td>
+  <td class="border px-4 py-2">$<%= '%.2f' % (f.object.price * f.object.quantity) %></td>
+  <%= f.hidden_field :product_id %>
+  <%= f.hidden_field :quantity %>
+  <%= f.hidden_field :price %>
+</tr>
+
+

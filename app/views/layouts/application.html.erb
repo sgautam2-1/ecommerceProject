@@ -1,4 +1,3 @@
-<!-- app/views/layouts/application.html.erb -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,6 +36,15 @@
     </div>
   </div>
 </nav>
+
+<!-- Flash Messages -->
+<div class="container mx-auto mt-4">
+  <% flash.each do |type, message| %>
+    <div class="alert alert-<%= type %> bg-<%= type == 'notice' ? 'green' : 'red' %>-500 text-white p-4 mb-4 rounded">
+      <%= message %>
+    </div>
+  <% end %>
+</div>
 
 <!-- Content -->
 <div class="container mx-auto py-8">

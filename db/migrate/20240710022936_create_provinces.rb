@@ -1,4 +1,3 @@
-
 # db/migrate/xxxxxx_create_provinces.rb
 class CreateProvinces < ActiveRecord::Migration[6.0]
   def change
@@ -13,3 +12,5 @@ class CreateProvinces < ActiveRecord::Migration[6.0]
     end
   end
 end
+
+

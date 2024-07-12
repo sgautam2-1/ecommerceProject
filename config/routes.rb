@@ -1,7 +1,8 @@
 # config/routes.rb
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    registrations: 'users/registrations'
+    registrations: 'users/registrations',
+    sessions: 'devise/sessions'  # Ensure sessions controller is correctly set up
   }
 
   # Custom sign out route
@@ -37,6 +38,7 @@ Rails.application.routes.draw do
       post 'add_item'
       delete 'remove_item/:id', to: 'carts#remove_item', as: 'remove_item'
       patch 'update_quantity', to: 'carts#update_quantity', as: 'update_quantity'
+      get 'checkout', to: 'carts#checkout', as: 'checkout'
     end
   end
 
@@ -49,6 +51,9 @@ Rails.application.routes.draw do
       post 'payment'
     end
   end
+
+  # Addresses routes
+  resources :addresses, only: [:new, :create]
 
   # Admin namespace for static_pages
   namespace :admin do

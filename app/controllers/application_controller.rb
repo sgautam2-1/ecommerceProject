@@ -1,5 +1,3 @@
-# app/controllers/application_controller.rb
-
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :ensure_address_present, unless: :devise_controller?
@@ -7,20 +5,8 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, address_attributes: [:street_address, :city, :state, :country, :postal_code, :province_id]])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name, address_attributes: [:street_address, :city, :state, :country, :postal_code, :province_id]])
-  end
-
-  def current_cart
-    if current_user
-      if session[:cart_id].present?
-        Cart.find(session[:cart_id])
-      else
-        cart = Cart.create(user_id: current_user.id)
-        session[:cart_id] = cart.id
-        cart
-      end
-    end
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, address_attributes: [:line1, :line2, :city, :state, :country, :zipcode, :province_id]])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:name, address_attributes: [:line1, :line2, :city, :state, :country, :zipcode, :province_id]])
   end
 
   private

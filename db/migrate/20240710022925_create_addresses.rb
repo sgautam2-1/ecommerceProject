@@ -1,12 +1,14 @@
-# db/migrate/20240710022925_create_addresses.rb
 class CreateAddresses < ActiveRecord::Migration[6.0]
   def change
     create_table :addresses do |t|
-      t.references :user, null: false, foreign_key: true
-      t.references :province, null: false, foreign_key: true
-      t.string :street_address
+      t.string :line1
+      t.string :line2
       t.string :city
-      t.string :postal_code
+      t.string :state
+      t.string :country
+      t.string :zipcode
+      t.references :province, null: false, foreign_key: true
+      t.references :user, foreign_key: true
 
       t.timestamps
     end

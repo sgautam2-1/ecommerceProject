@@ -1,18 +1,3 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
-# db/seeds.rb
-
-# db/seeds.rb
-
-# db/seeds.rb
-
-# db/seeds.rb
-
 require 'uri'  # Ensure URI module is required
 
 # Ensure categories exist before seeding products
@@ -32,7 +17,6 @@ end
   image_url = generate_image_url(product_name)
 
   category = electronics_category
-  product_name = Faker::Commerce.product_name
   description = Faker::Lorem.paragraph(sentence_count: 3)
   price = Faker::Commerce.price(range: 50..500.0)
   Product.create!(
@@ -49,7 +33,6 @@ end
   image_url = generate_image_url(product_name)
 
   category = clothing_category
-  product_name = Faker::Commerce.product_name
   description = Faker::Lorem.paragraph(sentence_count: 3)
   price = Faker::Commerce.price(range: 20..200.0)
   Product.create!(
@@ -62,11 +45,10 @@ end
 end
 
 50.times do
-  product_name = Faker::Commerce.product_name
+  product_name = Faker::Book.title  # Use Faker::Book.title for books
   image_url = generate_image_url(product_name)
 
   category = books_category
-  product_name = Faker::Book.title
   description = Faker::Lorem.paragraph(sentence_count: 3)
   price = Faker::Commerce.price(range: 10..100.0)
   Product.create!(
@@ -83,7 +65,6 @@ end
   image_url = generate_image_url(product_name)
 
   category = home_category
-  product_name = Faker::Commerce.product_name
   description = Faker::Lorem.paragraph(sentence_count: 3)
   price = Faker::Commerce.price(range: 30..300.0)
   Product.create!(
@@ -95,7 +76,33 @@ end
   )
 end
 
-puts 'Seeding complete!'
+puts 'Products seeded successfully!'
 
+# Provinces seeding
+provinces = [
+  { name: 'Alberta', gst: 5.0, pst: 0.0, qst: 0.0, hst: 0.0 },
+  { name: 'British Columbia', gst: 5.0, pst: 7.0, qst: 0.0, hst: 0.0 },
+  { name: 'Manitoba', gst: 5.0, pst: 7.0, qst: 0.0, hst: 0.0 },
+  { name: 'New Brunswick', gst: 0.0, pst: 0.0, qst: 0.0, hst: 15.0 },
+  { name: 'Newfoundland and Labrador', gst: 0.0, pst: 0.0, qst: 0.0, hst: 15.0 },
+  { name: 'Northwest Territories', gst: 5.0, pst: 0.0, qst: 0.0, hst: 0.0 },
+  { name: 'Nova Scotia', gst: 0.0, pst: 0.0, qst: 0.0, hst: 15.0 },
+  { name: 'Nunavut', gst: 5.0, pst: 0.0, qst: 0.0, hst: 0.0 },
+  { name: 'Ontario', gst: 0.0, pst: 0.0, qst: 0.0, hst: 13.0 },
+  { name: 'Prince Edward Island', gst: 0.0, pst: 0.0, qst: 0.0, hst: 15.0 },
+  { name: 'Quebec', gst: 5.0, pst: 0.0, qst: 9.975, hst: 0.0 },
+  { name: 'Saskatchewan', gst: 5.0, pst: 6.0, qst: 0.0, hst: 0.0 },
+  { name: 'Yukon', gst: 5.0, pst: 0.0, qst: 0.0, hst: 0.0 }
+]
 
-puts 'Seeding complete!'
+provinces.each do |province|
+  # Find or create the province by name and update its attributes
+  Province.find_or_create_by!(name: province[:name]).update!(
+    gst: province[:gst],
+    pst: province[:pst],
+    qst: province[:qst],
+    hst: province[:hst]
+  )
+end
+
+puts "Provinces seeded successfully."
