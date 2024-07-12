@@ -13,6 +13,10 @@
   <p class="mt-2 text-sm text-gray-500">
     Category: <%= @product.category.present? ? @product.category.name : "No category" %>
   </p>
-</div>
 
 
+<%= form_with(model: OrderItem.new, url: add_item_cart_path, class: "mt-4") do |f| %>
+  <%= f.hidden_field :product_id, value: @product.id %>
+  <%= f.number_field :quantity, class: "form-control" %>
+  <%= f.submit "Add to Cart", class: "btn btn-primary" %>
+<% end %>

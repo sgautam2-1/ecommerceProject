@@ -1,5 +1,5 @@
+# config/routes.rb
 Rails.application.routes.draw do
-  # Devise routes for users with custom registrations controller
   devise_for :users, controllers: {
     registrations: 'users/registrations'
   }
@@ -30,6 +30,25 @@ Rails.application.routes.draw do
 
   # Categories routes
   resources :categories, only: [:index, :show]
+
+  # Cart routes
+  resource :cart, only: [:show] do
+    collection do
+      post 'add_item'
+      delete 'remove_item/:id', to: 'carts#remove_item', as: 'remove_item'
+      patch 'update_quantity', to: 'carts#update_quantity', as: 'update_quantity'
+    end
+  end
+
+  # Orders routes
+  resources :orders, only: [:index, :show]
+
+  # Checkout routes
+  resources :checkout, only: [:new, :create, :show] do
+    member do
+      post 'payment'
+    end
+  end
 
   # Admin namespace for static_pages
   namespace :admin do

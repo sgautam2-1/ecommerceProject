@@ -1,0 +1,54 @@
+<!-- app/views/checkout/new.html.erb -->
+<% if current_user.address %>
+  <div class="max-w-md mx-auto bg-white p-8 border border-gray-300 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4">Order Summary</h2>
+
+    <h3 class="text-xl font-semibold mb-2">Shipping Address</h3>
+    <p><%= current_user.address.line1 %>, <%= current_user.address.line2 %></p>
+    <p><%= current_user.address.city %>, <%= current_user.address.state %>, <%= current_user.address.country %> - <%= current_user.address.zipcode %></p>
+
+    <h3 class="text-xl font-semibold mb-2">Order Items</h3>
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr>
+          <th class="px-4 py-2">Product</th>
+          <th class="px-4 py-2">Quantity</th>
+          <th class="px-4 py-2">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.order_items.each do |item| %>
+          <tr>
+            <td class="border px-4 py-2"><%= item.product.name %></td>
+            <td class="border px-4 py-2"><%= item.quantity %></td>
+            <td class="border px-4 py-2">$<%= '%.2f' % (item.price * item.quantity) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <h3 class="text-xl font-semibold mb-2">Invoice</h3>
+    <p>Subtotal: $<%= '%.2f' % @taxes[:subtotal] %></p>
+    <p>GST: $<%= '%.2f' % @taxes[:gst] %></p>
+    <p>PST: $<%= '%.2f' % @taxes[:pst] %></p>
+    <p>HST: $<%= '%.2f' % @taxes[:hst] %></p>
+    <p>QST: $<%= '%.2f' % @taxes[:qst] %></p>
+    <p>Total Taxes: $<%= '%.2f' % @taxes[:total_taxes] %></p>
+    <p>Total Amount: $<%= '%.2f' % @taxes[:total_amount] %></p>
+
+    <h3 class="text-xl font-semibold mb-2">Total: $<%= '%.2f' % @order.total_amount %></h3>
+
+    <%= form_with model: @order, url: checkout_index_path, method: :post do |f| %>
+      <%= f.fields_for :order_items do |item_form| %>
+        <%= item_form.hidden_field :product_id %>
+        <%= item_form.hidden_field :quantity %>
+        <%= item_form.hidden_field :price %>
+      <% end %>
+      <div class="form-row">
+        <%= f.submit "Place Order", class: "bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%= redirect_to new_address_path, alert: 'Please enter your address to continue.' %>
+<% end %>

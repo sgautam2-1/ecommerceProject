@@ -1,9 +1,13 @@
 <!-- app/views/devise/registrations/new.html.erb -->
-
 <h2>Sign up</h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= devise_error_messages! %>
+
+  <div class="field">
+    <%= f.label :username %><br />
+    <%= f.text_field :username, autofocus: true, autocomplete: "username" %>
+  </div>
 
   <div class="field">
     <%= f.label :email %><br />
@@ -11,10 +15,7 @@
   </div>
 
   <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
+    <%= f.label :password %><br />
     <%= f.password_field :password, autocomplete: "new-password" %>
   </div>
 
@@ -23,26 +24,26 @@
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
 
-  <!-- Address fields -->
-  <%= f.fields_for :address, @address do |address_fields| %>
+  <h3>Address</h3>
+  <%= f.fields_for :address do |address_form| %>
     <div class="field">
-      <%= address_fields.label :street_address %><br />
-      <%= address_fields.text_field :street_address %>
+      <%= address_form.label :street_address %><br />
+      <%= address_form.text_field :street_address %>
     </div>
 
     <div class="field">
-      <%= address_fields.label :city %><br />
-      <%= address_fields.text_field :city %>
+      <%= address_form.label :city %><br />
+      <%= address_form.text_field :city %>
     </div>
 
     <div class="field">
-      <%= address_fields.label :province_id %><br />
-      <%= address_fields.select :province_id, options_for_select(Province.all.map { |p| [p.name, p.id] }), {}, { class: 'form-control' } %>
+      <%= address_form.label :postal_code %><br />
+      <%= address_form.text_field :postal_code %>
     </div>
 
     <div class="field">
-      <%= address_fields.label :postal_code %><br />
-      <%= address_fields.text_field :postal_code %>
+      <%= address_form.label :province_id %><br />
+      <%= address_form.collection_select :province_id, Province.all, :id, :name %>
     </div>
   <% end %>
 

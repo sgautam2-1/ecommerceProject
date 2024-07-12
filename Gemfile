@@ -67,3 +67,4 @@ gem 'friendly_id', '~> 5.4'
 
 gem 'discordrb'
 gem 'dotenv-rails'
+gem 'stripe'
