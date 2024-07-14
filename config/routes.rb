@@ -1,8 +1,6 @@
-# config/routes.rb
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    sessions: 'devise/sessions'  # Ensure sessions controller is correctly set up
+    registrations: 'users/registrations'
   }
 
   # Custom sign out route
@@ -47,8 +45,9 @@ Rails.application.routes.draw do
 
   # Checkout routes
   resources :checkout, only: [:new, :create, :show] do
-    member do
-      post 'payment'
+    collection do
+      get 'success'
+      get 'cancel'
     end
   end
 

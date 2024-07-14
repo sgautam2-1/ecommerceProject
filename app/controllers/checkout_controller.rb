@@ -1,4 +1,3 @@
-# app/controllers/checkout_controller.rb
 class CheckoutController < ApplicationController
   before_action :authenticate_user!
 
@@ -10,19 +9,26 @@ class CheckoutController < ApplicationController
   def create
     @order = current_user.orders.build(order_params)
     @order.status = 'pending'
-    prepare_order_details  # Ensure order details are prepared before saving
-
-    Rails.logger.debug("Order Details before save: #{@order.attributes}")
-    Rails.logger.debug("Order Items before save: #{@order.order_items.map(&:attributes)}")
+    @order.address = current_user.address
+    @order.province = current_user.address.province
 
     if @order.save
       session[:cart] = [] # Clear the cart
-      redirect_to orders_path, notice: 'Order placed successfully.'
+      create_stripe_session(@order)
     else
-      Rails.logger.debug("Order save errors: #{@order.errors.full_messages}")
       prepare_order_details
       render :new
     end
+  end
+
+  def success
+    @session = Stripe::Checkout::Session.retrieve(params[:session_id])
+    @order = current_user.orders.find_by(stripe_charge_id: @session.id)
+    @order.update(status: 'paid') if @order.present?
+  end
+
+  def cancel
+    # Handle what happens if the payment is cancelled
   end
 
   private
@@ -36,16 +42,13 @@ class CheckoutController < ApplicationController
       @order.address = current_user.address
       @order.province = current_user.address.province
       @cart_items = session[:cart] || []
-
-      # Clear existing order items if any (optional, depends on your logic)
-      @order.order_items.clear if @order.new_record?
-
-      @cart_items.each do |item|
-        product = Product.find(item["product_id"])
-        @order.order_items.build(product: product, quantity: item["quantity"], price: product.price)
+      if @order.order_items.empty?
+        @cart_items.each do |item|
+          product = Product.find(item["product_id"])
+          @order.order_items.build(product: product, quantity: item["quantity"], price: product.price)
+        end
       end
       @taxes = calculate_taxes(@order)
-      @order.total_amount = @taxes[:total_amount]  # Ensure the order's total amount is updated
     else
       redirect_to new_address_path, alert: 'Please update your address with a valid province.'
     end
@@ -60,6 +63,7 @@ class CheckoutController < ApplicationController
     qst = subtotal * province.qst / 100
     total_taxes = gst + pst + hst + qst
     total_amount = subtotal + total_taxes
+    order.total_amount = total_amount
     {
       subtotal: subtotal,
       gst: gst,
@@ -69,5 +73,40 @@ class CheckoutController < ApplicationController
       total_taxes: total_taxes,
       total_amount: total_amount
     }
+  end
+
+  def create_stripe_session(order)
+    line_items = order.order_items.map do |item|
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.product.name,
+          },
+          unit_amount: (item.price * 100).to_i,
+        },
+        quantity: item.quantity,
+      }
+    end
+
+    session = Stripe::Checkout::Session.create(
+      payment_method_types: ['card'],
+      line_items: line_items,
+      mode: 'payment',
+      success_url: checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: checkout_cancel_url
+    )
+
+    order.update(stripe_charge_id: session.id)
+
+    redirect_to session.url, allow_other_host: true
+  end
+
+  def checkout_success_url
+    "#{root_url}checkout/success"
+  end
+
+  def checkout_cancel_url
+    "#{root_url}checkout/cancel"
   end
 end
