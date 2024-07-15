@@ -1,4 +1,4 @@
-# app/models/static_page.rb
+
 class StaticPage < ApplicationRecord
     extend FriendlyId
     friendly_id :title, use: :slugged

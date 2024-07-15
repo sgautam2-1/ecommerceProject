@@ -1,4 +1,4 @@
-# db/migrate/20240711223735_add_canadian_provinces.rb
+
 class AddCanadianProvinces < ActiveRecord::Migration[6.0]
   def change
     Province.create([

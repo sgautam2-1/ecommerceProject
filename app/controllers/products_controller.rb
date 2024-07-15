@@ -1,4 +1,3 @@
-# app/controllers/products_controller.rb
 
 class ProductsController < ApplicationController
   before_action :set_categories, only: [:index, :show, :new_arrivals, :recently_updated]
