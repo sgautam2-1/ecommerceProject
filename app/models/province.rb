@@ -1,9 +1,12 @@
-# app/models/province.rb
 class Province < ApplicationRecord
   has_many :addresses
   has_many :orders
 
-  # validates :name, :gst, :pst, :hst, :qst, presence: true
+  def self.ransackable_attributes(auth_object = nil)
+    ["name", "gst", "pst", "hst", "qst", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["addresses", "orders"]
+  end
 end
-
-
