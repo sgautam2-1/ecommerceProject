@@ -1,0 +1,9 @@
+<div class="bg-yellow-100 p-4 rounded-lg shadow-md my-4">
+  <h2 class="text-xl font-bold mb-2">Our Commitment</h2>
+
+  <% flash.each do |type, message| %>
+    <div class="alert alert-<%= type %> bg-<%= type == 'notice' ? 'black' : 'blue' %>-500 text-white p-4 mb-4 rounded">
+      <%= message %>
+    </div>
+  <% end %>
+</div>

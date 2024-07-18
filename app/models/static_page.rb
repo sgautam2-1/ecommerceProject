@@ -7,7 +7,8 @@ class StaticPage < ApplicationRecord
       title_changed?
     end
   
-    # Example validation, replace with your actual validations
     validates :title, presence: true
+    validates :content, presence: true
+    validates :title, length: { minimum: 5, maximum: 100 }
   end
   
