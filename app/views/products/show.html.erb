@@ -1,22 +1,24 @@
-<h1><%= @product.name %></h1>
-<div class="border border-gray-200 p-4 rounded-md shadow-md">
+<h1 class="text-3xl font-bold mb-4"><%= @product.name %></h1>
+<div class="border border-gray-200 p-6 rounded-md shadow-md">
   <% if @product.image_url.present? %>
-    <%= image_tag(@product.image_url, class: "w-full h-auto rounded-md mb-2") %>
+    <%= image_tag(@product.image_url, class: "w-1/2 h-auto rounded-md mb-4 mx-auto block") %>
   <% else %>
-    <div class="w-full h-auto rounded-md mb-2 bg-gray-200 flex items-center justify-center" style="height: 300px;">
+    <div class="w-1/2 h-auto rounded-md mb-4 bg-gray-200 flex items-center justify-center mx-auto" style="height: 200px;">
       <span class="text-gray-600">No image found</span>
     </div>
   <% end %>
-  <h2 class="text-lg font-semibold"><%= @product.name %></h2>
-  <p class="text-gray-600"><%= @product.description %></p>
-  <p class="mt-2 font-bold text-gray-800"><%= number_to_currency(@product.price) %></p>
-  <p class="mt-2 text-sm text-gray-500">
+  <h2 class="text-xl font-semibold text-center"><%= @product.name %></h2>
+  <p class="text-gray-600 text-center mb-4"><%= @product.description %></p>
+  <p class="mt-2 font-bold text-gray-800 text-center"><%= number_to_currency(@product.price) %></p>
+  <p class="mt-2 text-sm text-gray-500 text-center">
     Category: <%= @product.category.present? ? @product.category.name : "No category" %>
   </p>
 
-
-<%= form_with(model: OrderItem.new, url: add_item_cart_path, class: "mt-4") do |f| %>
-  <%= f.hidden_field :product_id, value: @product.id %>
-  <%= f.number_field :quantity, class: "form-control" %>
-  <%= f.submit "Add to Cart", class: "btn btn-primary" %>
-<% end %>
+  <div class="flex justify-center mt-4">
+    <%= form_with(model: OrderItem.new, url: add_item_cart_path, class: "flex space-x-2") do |f| %>
+      <%= f.hidden_field :product_id, value: @product.id %>
+      <%= f.number_field :quantity, class: "form-control w-16" %>
+      <%= f.submit "Add to Cart", class: "btn bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700" %>
+    <% end %>
+  </div>
+</div>
