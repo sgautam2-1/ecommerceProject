@@ -8,7 +8,7 @@ class CheckoutController < ApplicationController
 
   def create
     @order = current_user.orders.build(order_params)
-    @order.status = 'pending'
+    @order.status = "pending"
     @order.address = current_user.address
     @order.province = current_user.address.province
 
@@ -24,7 +24,7 @@ class CheckoutController < ApplicationController
   def success
     @session = Stripe::Checkout::Session.retrieve(params[:session_id])
     @order = current_user.orders.find_by(stripe_charge_id: @session.id)
-    @order.update(status: 'paid') if @order.present?
+    @order.update(status: "paid") if @order.present?
   end
 
   def cancel
@@ -34,7 +34,7 @@ class CheckoutController < ApplicationController
   private
 
   def order_params
-    params.require(:order).permit(order_items_attributes: [:product_id, :quantity, :price])
+    params.require(:order).permit(order_items_attributes: %i[product_id quantity price])
   end
 
   def prepare_order_details
@@ -45,12 +45,13 @@ class CheckoutController < ApplicationController
       if @order.order_items.empty?
         @cart_items.each do |item|
           product = Product.find(item["product_id"])
-          @order.order_items.build(product: product, quantity: item["quantity"], price: product.price)
+          @order.order_items.build(product:, quantity: item["quantity"],
+                                   price: product.price)
         end
       end
       @taxes = calculate_taxes(@order)
     else
-      redirect_to new_address_path, alert: 'Please update your address with a valid province.'
+      redirect_to new_address_path, alert: "Please update your address with a valid province."
     end
   end
 
@@ -65,13 +66,13 @@ class CheckoutController < ApplicationController
     total_amount = subtotal + total_taxes
     order.total_amount = total_amount
     {
-      subtotal: subtotal,
-      gst: gst,
-      pst: pst,
-      hst: hst,
-      qst: qst,
-      total_taxes: total_taxes,
-      total_amount: total_amount
+      subtotal:,
+      gst:,
+      pst:,
+      hst:,
+      qst:,
+      total_taxes:,
+      total_amount:
     }
   end
 
@@ -79,22 +80,22 @@ class CheckoutController < ApplicationController
     line_items = order.order_items.map do |item|
       {
         price_data: {
-          currency: 'usd',
+          currency:     "usd",
           product_data: {
-            name: item.product.name,
+            name: item.product.name
           },
-          unit_amount: (item.price * 100).to_i,
+          unit_amount:  (item.price * 100).to_i
         },
-        quantity: item.quantity,
+        quantity:   item.quantity
       }
     end
 
     session = Stripe::Checkout::Session.create(
-      payment_method_types: ['card'],
-      line_items: line_items,
-      mode: 'payment',
-      success_url: checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: checkout_cancel_url
+      payment_method_types: ["card"],
+      line_items:,
+      mode:                 "payment",
+      success_url:          checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url:           checkout_cancel_url
     )
 
     order.update(stripe_charge_id: session.id)

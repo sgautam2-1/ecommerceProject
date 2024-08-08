@@ -7,11 +7,11 @@ class AddressesController < ApplicationController
 
   def create
     @address = current_user.build_address(address_params)
-    
+
     if Province.exists?(params[:address][:province_id]) && @address.save
-      redirect_to new_checkout_path, notice: 'Address saved successfully.'
+      redirect_to new_checkout_path, notice: "Address saved successfully."
     else
-      flash[:alert] = 'Error saving address. Please ensure all fields are correctly filled.'
+      flash[:alert] = "Error saving address. Please ensure all fields are correctly filled."
       render :new
     end
   end

@@ -4,7 +4,21 @@
 <div class="container mx-auto p-8">
   <h2 class="text-2xl font-bold mb-4">About Us</h2>
   <p>Learn more about our company and what we do.</p>
-  <%= render 'static_pages/privacy_notice' %>
+
+  <!-- Fun Facts and Flash Messages -->
+  <div class="bg-yellow-100 p-4 rounded-lg shadow-md my-4">
+    <h2 class="text-xl font-bold mb-2">Fun Facts</h2>
+    <% if session[:last_order_product_name] %>
+      <p>Did you know? Your last order was <strong><%= session[:last_order_product_name] %></strong>. Would you like to <%= link_to 'order again', product_path(session[:last_order_product_id]), class: 'text-blue-500' %>?</p>
+    <% else %>
+      <p>Explore our products to find something you love!</p>
+    <% end %>
+    <% flash.each do |type, message| %>
+      <div class="alert alert-<%= type %> bg-<%= type == 'notice' ? 'green' : 'red' %>-500 text-white p-4 mb-4 rounded">
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <%= render 'shared/footer' %>

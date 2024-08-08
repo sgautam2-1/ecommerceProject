@@ -1,6 +1,5 @@
-
 class ProductsController < ApplicationController
-  before_action :set_categories, only: [:index, :show, :new_arrivals, :recently_updated]
+  before_action :set_categories, only: %i[index show new_arrivals recently_updated]
   before_action :set_product, only: [:show]
 
   def index
@@ -8,8 +7,7 @@ class ProductsController < ApplicationController
     filter_products
   end
 
-  def show
-  end
+  def show; end
 
   def new_arrivals
     @products = Product.where("created_at >= ?", 1.hour.ago).page(params[:page]).per(10)
@@ -30,17 +28,15 @@ class ProductsController < ApplicationController
   end
 
   def filter_products
-    if params[:search].present?
-      @products = @products.where("name LIKE ?", "%#{params[:search]}%")
-    end
+    @products = @products.where("name LIKE ?", "%#{params[:search]}%") if params[:search].present?
 
     if params[:category].present? && params[:category] != ""
       @products = @products.where(category_id: params[:category])
     end
 
-    if params[:filter] == 'new_arrivals'
+    if params[:filter] == "new_arrivals"
       @products = @products.where("created_at >= ?", 1.hour.ago)
-    elsif params[:filter] == 'recently_updated'
+    elsif params[:filter] == "recently_updated"
       @products = @products.where("updated_at >= ?", 1.hour.ago)
     end
   end

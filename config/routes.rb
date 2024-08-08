@@ -22,8 +22,8 @@ Rails.application.routes.draw do
   # Products routes
   resources :products, only: [:index, :show] do
     collection do
-      get 'new_arrivals', to: 'products#new_arrivals'
-      get 'recently_updated', to: 'products#recently_updated'
+      get 'new_arrivals'
+      get 'recently_updated'
     end
   end
 
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       post 'add_item'
       delete 'remove_item/:id', to: 'carts#remove_item', as: 'remove_item'
       patch 'update_quantity', to: 'carts#update_quantity', as: 'update_quantity'
-      get 'checkout', to: 'carts#checkout', as: 'checkout'
+      get 'checkout', as: 'checkout'
     end
   end
 
@@ -56,6 +56,6 @@ Rails.application.routes.draw do
 
   # Admin namespace for static_pages
   namespace :admin do
-    resources :static_pages, only: [:edit, :update]
+    resources :static_pages, only: [:index, :edit, :update]
   end
 end

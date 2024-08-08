@@ -1,9 +1,8 @@
-<!-- app/views/static_pages/contact.html.erb -->
 <%= render 'shared/header' %>
 
 <div class="container mx-auto p-8">
-  <h2 class="text-2xl font-bold mb-4">Contact Us</h2>
-  <p>Get in touch with us for any queries or support.</p>
+  <h2 class="text-2xl font-bold mb-4"><%= @static_page.title %></h2>
+  <p><%= @static_page.content.html_safe %></p>
 </div>
 
 <%= render 'shared/footer' %>

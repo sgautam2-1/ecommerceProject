@@ -22,6 +22,7 @@ class OrdersController < ApplicationController
     qst = subtotal * province.qst / 100
     total_taxes = gst + pst + hst + qst
     total_amount = subtotal + total_taxes
-    { subtotal: subtotal, gst: gst, pst: pst, hst: hst, qst: qst, total_taxes: total_taxes, total_amount: total_amount }
+    { subtotal:, gst:, pst:, hst:, qst:, total_taxes:,
+total_amount: }
   end
 end

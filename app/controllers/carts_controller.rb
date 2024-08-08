@@ -1,4 +1,3 @@
-
 class CartsController < ApplicationController
   before_action :authenticate_user!
 
@@ -19,7 +18,7 @@ class CartsController < ApplicationController
 
     order_item = {
       "product_id" => product_id,
-      "quantity" => quantity
+      "quantity"   => quantity
     }
 
     session[:cart] ||= []
@@ -50,9 +49,7 @@ class CartsController < ApplicationController
     session[:cart] ||= []
     item = session[:cart].find { |item| item["product_id"] == product_id }
 
-    if item
-      item["quantity"] = quantity
-    end
+    item["quantity"] = quantity if item
 
     redirect_to cart_path, notice: "Cart updated successfully."
   end

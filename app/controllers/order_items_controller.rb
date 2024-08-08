@@ -4,8 +4,8 @@ class OrderItemsController < ApplicationController
     product = Product.find(params[:order_item][:product_id])
     order_item = {
       "product_id" => product.id,
-      "quantity" => params[:order_item][:quantity].to_i,
-      "price" => product.price
+      "quantity"   => params[:order_item][:quantity].to_i,
+      "price"      => product.price
     }
 
     session[:cart] ||= []
@@ -25,9 +25,7 @@ class OrderItemsController < ApplicationController
 
     session[:cart] ||= []
     cart_item = session[:cart].find { |item| item["product_id"] == product_id }
-    if cart_item
-      cart_item["quantity"] = quantity
-    end
+    cart_item["quantity"] = quantity if cart_item
 
     redirect_to cart_path, notice: "Product quantity updated."
   end
