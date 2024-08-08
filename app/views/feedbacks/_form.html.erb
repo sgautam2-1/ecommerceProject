@@ -1,0 +1,26 @@
+<%= form_with(model: feedback, local: true) do |form| %>
+  <% if feedback.errors.any? %>
+    <div class="bg-red-500 text-white p-4 rounded">
+      <h2 class="text-lg font-bold">Form contains <%= pluralize(feedback.errors.count, "error") %>:</h2>
+      <ul class="mt-2">
+        <% feedback.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :message, class: "block text-gray-700 font-bold mb-2" %>
+    <%= form.text_area :message, class: "form-textarea mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :image, class: "block text-gray-700 font-bold mb-2" %>
+    <%= form.file_field :image, class: "block w-full text-gray-700" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.submit "Submit Feedback", class: "bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600" %>
+  </div>
+<% end %>

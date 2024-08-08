@@ -34,6 +34,7 @@
         <a href="/contact" class="text-white hover:text-gray-300">Contact</a>
         <%= link_to 'Cart', cart_path, class: "text-white hover:text-gray-300" %>
         <%= link_to 'Orders', orders_path, class: "text-white hover:text-gray-300" %>
+        <%= link_to 'Feedback', new_feedback_path, class: "text-white hover:text-gray-300" %>
         <% if user_signed_in? %>
 
           <%= link_to 'Sign Out', destroy_user_session_path, method: :delete, class: "text-white hover:text-gray-300" %>
